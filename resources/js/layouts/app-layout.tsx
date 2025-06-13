@@ -1,6 +1,4 @@
-import { AppHeader } from '@/components/app-header';
-import { AppSidebar } from '@/components/app-sidebar';
-import Alert from '@/components/Alert';
+import * as React from 'react';
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
 
 interface AppLayoutProps {
@@ -11,14 +9,9 @@ interface AppLayoutProps {
 export default function AppLayout({ children, breadcrumbs, ...props }: AppLayoutProps) {
     return (
         <div className="min-h-screen bg-gray-100">
-            <Alert />
-            <AppHeader breadcrumbs={breadcrumbs} />
-            <AppSidebar />
-            <main className="lg:pl-64">
-                <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-                    {children}
-                </AppLayoutTemplate>
-            </main>
+            <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
+                {children}
+            </AppLayoutTemplate>
         </div>
     );
 }

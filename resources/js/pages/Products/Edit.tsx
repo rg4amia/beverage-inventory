@@ -35,10 +35,10 @@ export default function Edit({ product, categories }: Props) {
       <Head title="Modifier le produit" />
 
       <div className="py-12">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
             <div className="p-6">
-              <h2 className="text-2xl font-semibold text-cave-bordeaux mb-6">Modifier le produit</h2>
+              <h2 className="mb-6 text-2xl font-semibold text-cave-bordeaux">Modifier le produit</h2>
 
               <form onSubmit={submit} className="space-y-6">
                 <div>
@@ -48,7 +48,7 @@ export default function Edit({ product, categories }: Props) {
                     type="text"
                     name="name"
                     value={data.name}
-                    className="mt-1 block w-full"
+                    className="block mt-1 w-full"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('name', e.target.value)}
                     required
                   />
@@ -81,14 +81,14 @@ export default function Edit({ product, categories }: Props) {
                     id="description"
                     name="description"
                     value={data.description}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cave-bordeaux focus:ring-cave-bordeaux"
+                    className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-cave-bordeaux focus:ring-cave-bordeaux"
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
                     rows={3}
                   />
                   <InputError message={errors.description} className="mt-2" />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                   <div>
                     <Label htmlFor="price">Prix</Label>
                     <Input
@@ -97,7 +97,7 @@ export default function Edit({ product, categories }: Props) {
                       step="0.01"
                       name="price"
                       value={data.price}
-                      className="mt-1 block w-full"
+                      className="block mt-1 w-full"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('price', e.target.value)}
                       required
                     />
@@ -111,7 +111,7 @@ export default function Edit({ product, categories }: Props) {
                       type="number"
                       name="stock_quantity"
                       value={data.stock_quantity}
-                      className="mt-1 block w-full"
+                      className="block mt-1 w-full"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('stock_quantity', e.target.value)}
                       required
                     />
@@ -125,7 +125,7 @@ export default function Edit({ product, categories }: Props) {
                       type="number"
                       name="minimum_stock"
                       value={data.minimum_stock}
-                      className="mt-1 block w-full"
+                      className="block mt-1 w-full"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('minimum_stock', e.target.value)}
                       required
                     />
@@ -140,7 +140,7 @@ export default function Edit({ product, categories }: Props) {
                     type="text"
                     name="barcode"
                     value={data.barcode}
-                    className="mt-1 block w-full"
+                    className="block mt-1 w-full"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('barcode', e.target.value)}
                   />
                   <InputError message={errors.barcode} className="mt-2" />
@@ -148,12 +148,12 @@ export default function Edit({ product, categories }: Props) {
 
                 <div>
                   <Label htmlFor="image">Image</Label>
-                  {product.image && (
+                  {product.image_path && (
                     <div className="mt-2 mb-4">
                       <img
-                        src={`/storage/${product.image}`}
+                        src={`/storage/${product.image_path}`}
                         alt={product.name}
-                        className="h-32 w-32 object-cover rounded-lg"
+                        className="object-cover w-32 h-32 rounded-lg"
                       />
                     </div>
                   )}
@@ -161,13 +161,13 @@ export default function Edit({ product, categories }: Props) {
                     type="file"
                     id="image"
                     name="image"
-                    className="mt-1 block w-full"
+                    className="block mt-1 w-full"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('image', e.target.files?.[0] || null)}
                   />
                   <InputError message={errors.image} className="mt-2" />
                 </div>
 
-                <div className="flex items-center justify-end">
+                <div className="flex justify-end items-center">
                   <Button
                     type="submit"
                     className="ml-4"

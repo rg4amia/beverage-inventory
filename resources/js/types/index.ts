@@ -17,6 +17,7 @@ export interface Product {
   category: Category;
   created_at: string;
   updated_at: string;
+  isLowStock(): boolean;
 }
 
 export interface Category {
@@ -44,4 +45,10 @@ export interface Transaction {
   };
   created_at: string;
   updated_at: string;
+}
+
+export interface NavItem {
+  title: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
 }

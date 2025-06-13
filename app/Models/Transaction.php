@@ -17,6 +17,8 @@ class Transaction extends Model
     'quantity',
     'unit_price',
     'total_price',
+    'purchase_price',
+    'sale_price',
     'notes',
   ];
 
@@ -24,6 +26,8 @@ class Transaction extends Model
     'quantity' => 'integer',
     'unit_price' => 'decimal:2',
     'total_price' => 'decimal:2',
+    'purchase_price' => 'decimal:2',
+    'sale_price' => 'decimal:2',
   ];
 
   public function product(): BelongsTo
@@ -34,5 +38,13 @@ class Transaction extends Model
   public function user(): BelongsTo
   {
     return $this->belongsTo(User::class);
+  }
+
+  public function getProfitAttribute()
+  {
+    if ($this->type === 'out' && $this->sale_price && $this->purchase_price) {
+      return ($this->sale_price - $this->purchase_price) * $this->quantity;
+    }
+    return 0;
   }
 }

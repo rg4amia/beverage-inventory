@@ -2,6 +2,8 @@ import { Head, Link } from '@inertiajs/react';
 import { Transaction } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import Pagination from '@/Components/Pagination';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { usePage } from '@inertiajs/react';
 
 interface PaginationLink {
   url: string | null;
@@ -17,12 +19,24 @@ interface Props {
 }
 
 export default function Index({ transactions }: Props) {
+  const { flash } = usePage().props;
+
   return (
     <AppLayout>
       <Head title="Transactions" />
 
       <div className="py-12">
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+          {flash.success && (
+            <Alert className="mb-6">
+              <AlertDescription>{flash.success}</AlertDescription>
+            </Alert>
+          )}
+          {flash.error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertDescription>{flash.error}</AlertDescription>
+            </Alert>
+          )}
           <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
             <div className="p-6">
               <div className="flex flex-col gap-4 justify-between items-start mb-8 sm:flex-row sm:items-center">
@@ -113,7 +127,7 @@ export default function Index({ transactions }: Props) {
                                 {transaction.product.name}
                               </div>
                               <div className="text-xs text-gray-500">
-                                {transaction.product.category.name}
+                                {transaction.product.category?.name || 'Sans catégorie'}
                               </div>
                             </div>
                           </div>

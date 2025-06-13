@@ -2,6 +2,8 @@ import { Head, Link } from '@inertiajs/react';
 import { Category } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import Pagination from '@/Components/Pagination';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { usePage } from '@inertiajs/react';
 
 interface Props {
   categories: {
@@ -11,12 +13,24 @@ interface Props {
 }
 
 export default function Index({ categories }: Props) {
+  const { flash } = usePage().props;
+
   return (
     <AppLayout>
       <Head title="Catégories" />
 
       <div className="py-12">
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+          {flash.success && (
+            <Alert className="mb-6">
+              <AlertDescription>{flash.success}</AlertDescription>
+            </Alert>
+          )}
+          {flash.error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertDescription>{flash.error}</AlertDescription>
+            </Alert>
+          )}
           <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
             <div className="p-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
