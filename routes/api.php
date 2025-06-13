@@ -13,6 +13,8 @@ Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login'])
 Route::get('/reports', [App\Http\Controllers\Api\ReportController::class, 'index']);
 Route::get('/reports/products', [App\Http\Controllers\Api\ReportController::class, 'productReport']);
 
+Route::get('/reports/export', [ReportController::class, 'export']);
+
 // Routes protégées
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
