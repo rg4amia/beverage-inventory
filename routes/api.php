@@ -22,10 +22,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Routes pour les produits
-    Route::get('/products/low-stock', [ProductController::class, 'lowStock']);
-    Route::apiResource('products', ProductController::class);
+    //Route::get('/products/low-stock', [ProductController::class, 'lowStock']);
+    //Route::apiResource('products', ProductController::class);
 
     // Routes pour les transactions
-    Route::get('/transactions/statistics', [TransactionController::class, 'statistics']);
-    Route::apiResource('transactions', TransactionController::class);
+    //Route::get('/transactions/statistics', [TransactionController::class, 'statistics']);
+    //Route::apiResource('transactions', TransactionController::class);
 });

@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import InputError from '@/components/input-error';
+import { type BreadcrumbItem } from '@/types';
 
 export default function Create() {
   const { data, setData, post, processing, errors } = useForm({
@@ -11,30 +12,37 @@ export default function Create() {
     description: '',
   });
 
+  const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Catégories',
+        href: route('categories.index'),
+    },
+];
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     post(route('categories.store'));
   };
 
   return (
-    <AppLayout>
+    <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Nouvelle catégorie" />
 
       <div className="py-12">
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+          <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
             <div className="p-6">
               <h2 className="mb-6 text-2xl font-semibold text-cave-bordeaux">Nouvelle catégorie</h2>
 
               <form onSubmit={submit} className="space-y-6">
                 <div>
-                  <Label htmlFor="name">Nom</Label>
+                  <Label htmlFor="name" className="text-gray-700 dark:text-gray-200">Nom</Label>
                   <Input
                     id="name"
                     type="text"
                     name="name"
                     value={data.name}
-                    className="block mt-1 w-full"
+                    className="block mt-1 w-full text-gray-900 bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('name', e.target.value)}
                     required
                   />
@@ -42,12 +50,12 @@ export default function Create() {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="text-gray-700 dark:text-gray-200">Description</Label>
                   <textarea
                     id="description"
                     name="description"
                     value={data.description}
-                    className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-cave-bordeaux focus:ring-cave-bordeaux"
+                    className="block mt-1 w-full text-gray-900 bg-white rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 focus:border-cave-bordeaux focus:ring-cave-bordeaux"
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
                     rows={3}
                   />

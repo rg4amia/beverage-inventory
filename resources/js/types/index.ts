@@ -9,6 +9,8 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  purchase_price: number;
+  sale_price: number;
   stock_quantity: number;
   minimum_stock: number;
   barcode: string;

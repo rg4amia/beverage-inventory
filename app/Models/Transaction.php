@@ -26,8 +26,6 @@ class Transaction extends Model
     'quantity' => 'integer',
     'unit_price' => 'decimal:2',
     'total_price' => 'decimal:2',
-    'purchase_price' => 'decimal:2',
-    'sale_price' => 'decimal:2',
   ];
 
   public function product(): BelongsTo

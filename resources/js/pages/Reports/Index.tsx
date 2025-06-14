@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
@@ -15,6 +15,7 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
+import { formatCurrency } from '@/utils/currency';
 
 ChartJS.register(
     CategoryScale,
@@ -58,14 +59,7 @@ export default function Reports({ auth }: PageProps) {
         total_purchase_quantity: 0,
     });
     const [loading, setLoading] = useState(false);
-    const [filterChanged, setFilterChanged] = useState(false);
     const [showCharts, setShowCharts] = useState(false);
-
-    useEffect(() => {
-        if (!filterChanged) {
-            fetchReport();
-        }
-    }, [startDate, endDate, groupBy, type]);
 
     const fetchReport = async () => {
         setLoading(true);
@@ -80,15 +74,10 @@ export default function Reports({ auth }: PageProps) {
             });
             setReport(response.data.report);
             setSummary(response.data.summary);
-            setFilterChanged(false);
         } catch (error) {
             console.error('Error fetching report:', error);
         }
         setLoading(false);
-    };
-
-    const handleFilterChange = () => {
-        setFilterChanged(true);
     };
 
     const handleExport = async (format: 'csv' | 'xlsx') => {
@@ -191,42 +180,42 @@ export default function Reports({ auth }: PageProps) {
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
+                    <div className="overflow-hidden bg-gray-800 shadow-sm sm:rounded-lg">
+                        <div className="p-6 text-gray-200">
                             <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Date de début</label>
+                                    <label className="block text-sm font-medium text-gray-300">Date de début</label>
                                     <input
                                         type="date"
                                         value={startDate}
                                         onChange={(e) => {
                                             setStartDate(e.target.value);
-                                            handleFilterChange();
+                                            fetchReport();
                                         }}
-                                        className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                        className="block mt-1 w-full text-gray-200 bg-gray-700 rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Date de fin</label>
+                                    <label className="block text-sm font-medium text-gray-300">Date de fin</label>
                                     <input
                                         type="date"
                                         value={endDate}
                                         onChange={(e) => {
                                             setEndDate(e.target.value);
-                                            handleFilterChange();
+                                            fetchReport();
                                         }}
-                                        className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                        className="block mt-1 w-full text-gray-200 bg-gray-700 rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Grouper par</label>
+                                    <label className="block text-sm font-medium text-gray-300">Grouper par</label>
                                     <select
                                         value={groupBy}
                                         onChange={(e) => {
                                             setGroupBy(e.target.value);
-                                            handleFilterChange();
+                                            fetchReport();
                                         }}
-                                        className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                        className="block mt-1 w-full text-gray-200 bg-gray-700 rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     >
                                         <option value="day">Jour</option>
                                         <option value="month">Mois</option>
@@ -234,14 +223,14 @@ export default function Reports({ auth }: PageProps) {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Type</label>
+                                    <label className="block text-sm font-medium text-gray-300">Type</label>
                                     <select
                                         value={type}
                                         onChange={(e) => {
                                             setType(e.target.value);
-                                            handleFilterChange();
+                                            fetchReport();
                                         }}
-                                        className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                        className="block mt-1 w-full text-gray-200 bg-gray-700 rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     >
                                         <option value="all">Tous</option>
                                         <option value="sale">Ventes</option>
@@ -250,96 +239,77 @@ export default function Reports({ auth }: PageProps) {
                                 </div>
                             </div>
 
-                            <div className="flex justify-between mb-6">
+                            <div className="flex justify-end mb-6 space-x-4">
                                 <button
-                                    onClick={fetchReport}
-                                    disabled={!filterChanged}
-                                    className={`px-4 py-2 rounded-md text-white ${
-                                        filterChanged
-                                            ? 'bg-indigo-600 hover:bg-indigo-700'
-                                            : 'bg-gray-400 cursor-not-allowed'
-                                    }`}
+                                    onClick={() => handleExport('csv')}
+                                    className="px-4 py-2 text-sm font-medium text-gray-200 bg-gray-700 rounded-md border border-gray-600 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
-                                    {loading ? 'Chargement...' : 'Valider les filtres'}
+                                    Exporter CSV
                                 </button>
+                                <button
+                                    onClick={() => handleExport('xlsx')}
+                                    className="px-4 py-2 text-sm font-medium text-gray-200 bg-gray-700 rounded-md border border-gray-600 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    Exporter Excel
+                                </button>
+                            </div>
 
-                                <div className="space-x-4">
-                                    <button
-                                        onClick={() => handleExport('csv')}
-                                        className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
-                                    >
-                                        Exporter CSV
-                                    </button>
-                                    <button
-                                        onClick={() => handleExport('xlsx')}
-                                        className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                                    >
-                                        Exporter XLSX
-                                    </button>
-                                    <button
-                                        onClick={() => setShowCharts(!showCharts)}
-                                        className="px-4 py-2 text-white bg-purple-600 rounded-md hover:bg-purple-700"
-                                    >
-                                        {showCharts ? 'Masquer les graphiques' : 'Afficher les graphiques'}
-                                    </button>
+                            <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-3">
+                                <div className="p-4 bg-gray-700 rounded-lg">
+                                    <h3 className="text-lg font-medium text-gray-200">Total Ventes</h3>
+                                    <p className="text-2xl font-bold text-green-400">{formatCurrency(summary.total_sales)}</p>
+                                </div>
+                                <div className="p-4 bg-gray-700 rounded-lg">
+                                    <h3 className="text-lg font-medium text-gray-200">Total Achats</h3>
+                                    <p className="text-2xl font-bold text-red-400">{formatCurrency(summary.total_purchases)}</p>
+                                </div>
+                                <div className="p-4 bg-gray-700 rounded-lg">
+                                    <h3 className="text-lg font-medium text-gray-200">Profit Total</h3>
+                                    <p className="text-2xl font-bold text-blue-400">{formatCurrency(summary.total_profit)}</p>
                                 </div>
                             </div>
 
+                            <div className="mb-6">
+                                <button
+                                    onClick={() => setShowCharts(!showCharts)}
+                                    className="px-4 py-2 text-sm font-medium text-gray-200 bg-gray-700 rounded-md border border-gray-600 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    {showCharts ? 'Masquer les graphiques' : 'Afficher les graphiques'}
+                                </button>
+                            </div>
+
                             {showCharts && (
-                                <div className="grid grid-cols-1 gap-6 mb-6">
-                                    <div className="p-4 bg-white rounded-lg shadow">
+                                <div className="space-y-6">
+                                    <div className="p-4 bg-gray-700 rounded-lg">
                                         <Line data={chartData} options={chartOptions} />
                                     </div>
-                                    <div className="p-4 bg-white rounded-lg shadow">
+                                    <div className="p-4 bg-gray-700 rounded-lg">
                                         <Bar data={barData} options={barOptions} />
                                     </div>
                                 </div>
                             )}
 
-                            <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-5">
-                                <div className="p-4 bg-white rounded-lg shadow">
-                                    <h3 className="text-lg font-semibold text-gray-700">Total Ventes</h3>
-                                    <p className="text-2xl font-bold text-green-600">{Number(summary.total_sales).toFixed(2)} €</p>
-                                </div>
-                                <div className="p-4 bg-white rounded-lg shadow">
-                                    <h3 className="text-lg font-semibold text-gray-700">Total Achats</h3>
-                                    <p className="text-2xl font-bold text-red-600">{Number(summary.total_purchases).toFixed(2)} €</p>
-                                </div>
-                                <div className="p-4 bg-white rounded-lg shadow">
-                                    <h3 className="text-lg font-semibold text-gray-700">Profit Total</h3>
-                                    <p className="text-2xl font-bold text-blue-600">{Number(summary.total_profit).toFixed(2)} €</p>
-                                </div>
-                                <div className="p-4 bg-white rounded-lg shadow">
-                                    <h3 className="text-lg font-semibold text-gray-700">Qté Ventes</h3>
-                                    <p className="text-2xl font-bold text-green-600">{Number(summary.total_sales_quantity)}</p>
-                                </div>
-                                <div className="p-4 bg-white rounded-lg shadow">
-                                    <h3 className="text-lg font-semibold text-gray-700">Qté Achats</h3>
-                                    <p className="text-2xl font-bold text-red-600">{Number(summary.total_purchase_quantity)}</p>
-                                </div>
-                            </div>
-
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
+                            <div className="overflow-x-auto mt-6">
+                                <table className="min-w-full divide-y divide-gray-600">
+                                    <thead className="bg-gray-700">
                                         <tr>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Date</th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Ventes (Qté)</th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Achats (Qté)</th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Ventes (€)</th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Achats (€)</th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Profit (€)</th>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Date</th>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Ventes (Qté)</th>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Achats (Qté)</th>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Ventes (€)</th>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Achats (€)</th>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Profit</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {report.map((row, index) => (
-                                            <tr key={index}>
-                                                <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{row.date}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{Number(row.sales_quantity)}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{Number(row.purchase_quantity)}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{Number(row.sales_amount).toFixed(2)} €</td>
-                                                <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{Number(row.purchase_amount).toFixed(2)} €</td>
-                                                <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{Number(row.profit).toFixed(2)} €</td>
+                                    <tbody className="bg-gray-800 divide-y divide-gray-700">
+                                        {report.map((item, index) => (
+                                            <tr key={index} className="hover:bg-gray-700">
+                                                <td className="px-6 py-4 text-sm text-gray-200 whitespace-nowrap">{item.date}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-200 whitespace-nowrap">{item.sales_quantity}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-200 whitespace-nowrap">{item.purchase_quantity}</td>
+                                                <td className="px-6 py-4 text-sm text-green-400 whitespace-nowrap">{formatCurrency(item.sales_amount)}</td>
+                                                <td className="px-6 py-4 text-sm text-red-400 whitespace-nowrap">{formatCurrency(item.purchase_amount)}</td>
+                                                <td className="px-6 py-4 text-sm text-blue-400 whitespace-nowrap">{formatCurrency(item.profit)}</td>
                                             </tr>
                                         ))}
                                     </tbody>

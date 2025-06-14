@@ -4,6 +4,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { Product } from '@/types';
 import { Link } from '@inertiajs/react';
+import { formatCurrency } from '@/utils/currency';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -84,75 +85,57 @@ export default function Dashboard({
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     {/* Statistiques générales */}
                     <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-4">
-                        <div className="p-4 bg-white rounded-lg shadow-sm">
-                            <h3 className="text-sm font-medium text-gray-500">Total des produits</h3>
+                        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Total des produits</h3>
                             <p className="mt-2 text-3xl font-bold text-cave-bordeaux">{totalProducts}</p>
                         </div>
-                        <div className="p-4 bg-white rounded-lg shadow-sm">
-                            <h3 className="text-sm font-medium text-gray-500">Valeur totale</h3>
+                        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Valeur totale</h3>
                             <p className="mt-2 text-3xl font-bold text-cave-bordeaux">
-                                {totalValue.toLocaleString('fr-FR', {
-                                    style: 'currency',
-                                    currency: 'EUR',
-                                })}
+                                {formatCurrency(totalValue)}
                             </p>
                         </div>
-                        <div className="p-4 bg-white rounded-lg shadow-sm">
-                            <h3 className="text-sm font-medium text-gray-500">Ventes du mois</h3>
-                            <p className="mt-2 text-3xl font-bold text-green-600">
-                                {financialStats.monthly_sales.toLocaleString('fr-FR', {
-                                    style: 'currency',
-                                    currency: 'EUR',
-                                })}
+                        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Ventes du mois</h3>
+                            <p className="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">
+                                {formatCurrency(financialStats.monthly_sales)}
                             </p>
                         </div>
-                        <div className="p-4 bg-white rounded-lg shadow-sm">
-                            <h3 className="text-sm font-medium text-gray-500">Bénéfice du mois</h3>
-                            <p className="mt-2 text-3xl font-bold text-green-600">
-                                {financialStats.monthly_profit.toLocaleString('fr-FR', {
-                                    style: 'currency',
-                                    currency: 'EUR',
-                                })}
+                        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Bénéfice du mois</h3>
+                            <p className="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">
+                                {formatCurrency(financialStats.monthly_profit)}
                             </p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
                         {/* Statistiques financières */}
-                        <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                        <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                             <div className="p-6">
                                 <h3 className="mb-4 text-lg font-semibold text-cave-bordeaux">Statistiques financières</h3>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 bg-gray-50 rounded-lg">
-                                        <p className="text-sm text-gray-600">Total des achats</p>
-                                        <p className="text-2xl font-bold text-red-600">
-                                            {financialStats.total_purchases.toLocaleString('fr-FR', {
-                                                style: 'currency',
-                                                currency: 'EUR',
-                                            })}
+                                    <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">Total des achats</p>
+                                        <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+                                            {formatCurrency(financialStats.total_purchases)}
                                         </p>
                                     </div>
-                                    <div className="p-4 bg-gray-50 rounded-lg">
-                                        <p className="text-sm text-gray-600">Total des ventes</p>
-                                        <p className="text-2xl font-bold text-green-600">
-                                            {financialStats.total_sales.toLocaleString('fr-FR', {
-                                                style: 'currency',
-                                                currency: 'EUR',
-                                            })}
+                                    <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">Total des ventes</p>
+                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                                            {formatCurrency(financialStats.total_sales)}
                                         </p>
                                     </div>
-                                    <div className="p-4 bg-gray-50 rounded-lg">
-                                        <p className="text-sm text-gray-600">Bénéfice total</p>
-                                        <p className="text-2xl font-bold text-green-600">
-                                            {financialStats.total_profit.toLocaleString('fr-FR', {
-                                                style: 'currency',
-                                                currency: 'EUR',
-                                            })}
+                                    <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">Bénéfice total</p>
+                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                                            {formatCurrency(financialStats.total_profit)}
                                         </p>
                                     </div>
-                                    <div className="p-4 bg-gray-50 rounded-lg">
-                                        <p className="text-sm text-gray-600">Marge moyenne</p>
-                                        <p className="text-2xl font-bold text-green-600">
+                                    <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">Marge moyenne</p>
+                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                                             {((financialStats.total_profit / financialStats.total_sales) * 100).toFixed(1)}%
                                         </p>
                                     </div>
@@ -161,30 +144,24 @@ export default function Dashboard({
                         </div>
 
                         {/* Produits les plus vendus */}
-                        <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                        <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                             <div className="p-6">
                                 <h3 className="mb-4 text-lg font-semibold text-cave-bordeaux">Produits les plus vendus</h3>
                                 <div className="space-y-4">
                                     {topProducts.map((item, index) => (
-                                        <div key={index} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                                        <div key={index} className="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
                                             <div>
-                                                <p className="font-medium text-gray-900">{item.product.name}</p>
-                                                <p className="text-sm text-gray-500">
+                                                <p className="font-medium text-gray-900 dark:text-gray-200">{item.product.name}</p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-400">
                                                     Quantité: {item.total_quantity}
                                                 </p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-sm font-medium text-green-600">
-                                                    {(item.total_sales || 0).toLocaleString('fr-FR', {
-                                                        style: 'currency',
-                                                        currency: 'EUR',
-                                                    })}
+                                                <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                                                    {formatCurrency(item.total_sales || 0)}
                                                 </p>
-                                                <p className="text-xs text-gray-500">
-                                                    Bénéfice: {(item.total_profit || 0).toLocaleString('fr-FR', {
-                                                        style: 'currency',
-                                                        currency: 'EUR',
-                                                    })}
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                    Bénéfice: {formatCurrency(item.total_profit || 0)}
                                                 </p>
                                             </div>
                                         </div>
@@ -196,24 +173,21 @@ export default function Dashboard({
 
                     <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
                         {/* Stocks par catégorie */}
-                        <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                        <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                             <div className="p-6">
                                 <h3 className="mb-4 text-lg font-semibold text-cave-bordeaux">Stocks par catégorie</h3>
                                 <div className="space-y-4">
                                     {stockByCategory.map((category, index) => (
-                                        <div key={index} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                                        <div key={index} className="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
                                             <div>
-                                                <p className="font-medium text-gray-900">{category.name}</p>
-                                                <p className="text-sm text-gray-500">
+                                                <p className="font-medium text-gray-900 dark:text-gray-200">{category.name}</p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-400">
                                                     Quantité: {category.products_sum_stock_quantity}
                                                 </p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-sm font-medium text-cave-bordeaux">
-                                                    {valueByCategory[index]?.products_sum_price.toLocaleString('fr-FR', {
-                                                        style: 'currency',
-                                                        currency: 'EUR',
-                                                    })}
+                                                    {formatCurrency(valueByCategory[index]?.products_sum_price)}
                                                 </p>
                                             </div>
                                         </div>
@@ -223,7 +197,7 @@ export default function Dashboard({
                         </div>
 
                         {/* Alertes de stock */}
-                        <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                        <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                             <div className="p-6">
                                 <h3 className="mb-4 text-lg font-semibold text-cave-bordeaux">Alertes de stock</h3>
                                 {lowStockProducts.length > 0 ? (
@@ -231,18 +205,18 @@ export default function Dashboard({
                                         {lowStockProducts.map((product) => (
                                             <div
                                                 key={product.id}
-                                                className="p-4 bg-red-50 rounded-lg border border-red-200"
+                                                className="p-4 bg-red-50 dark:bg-red-900/50 rounded-lg border border-red-200 dark:border-red-800"
                                             >
                                                 <div className="flex justify-between items-start">
                                                     <div>
-                                                        <p className="font-medium text-red-800">{product.name}</p>
-                                                        <p className="text-sm text-red-600">
+                                                        <p className="font-medium text-red-700 dark:text-red-300">{product.name}</p>
+                                                        <p className="text-sm text-red-600 dark:text-red-400">
                                                             Stock actuel: {product.stock_quantity} (Minimum: {product.minimum_stock})
                                                         </p>
                                                     </div>
                                                     <Link
                                                         href={route('products.edit', product.id)}
-                                                        className="text-sm text-red-600 hover:text-red-800"
+                                                        className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                                                     >
                                                         Gérer
                                                     </Link>
@@ -251,50 +225,50 @@ export default function Dashboard({
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-gray-600">Aucune alerte de stock</p>
+                                    <p className="text-gray-600 dark:text-gray-400">Aucune alerte de stock</p>
                                 )}
                             </div>
                         </div>
                     </div>
 
                     {/* Transactions récentes */}
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                    <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                         <div className="p-6">
                             <h3 className="mb-4 text-lg font-semibold text-cave-bordeaux">
                                 Transactions récentes
                             </h3>
                             <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
+                                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead className="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
                                                 Date
                                             </th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
                                                 Produit
                                             </th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
                                                 Type
                                             </th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
                                                 Quantité
                                             </th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
                                                 Prix
                                             </th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
                                                 Total
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
+                                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                         {recentTransactions.map((transaction) => (
                                             <tr key={transaction.id}>
-                                                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
                                                     {new Date(transaction.created_at).toLocaleDateString('fr-FR')}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-medium text-gray-900">
+                                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-200">
                                                         {transaction.product.name}
                                                     </div>
                                                 </td>
@@ -302,37 +276,25 @@ export default function Dashboard({
                                                     <span
                                                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                                             transaction.type === 'in'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : 'bg-red-100 text-red-800'
+                                                                ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
+                                                                : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'
                                                         }`}
                                                     >
                                                         {transaction.type === 'in' ? 'Entrée' : 'Sortie'}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
                                                     {transaction.quantity}
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
                                                     {transaction.type === 'in'
-                                                        ? transaction.purchase_price?.toLocaleString('fr-FR', {
-                                                              style: 'currency',
-                                                              currency: 'EUR',
-                                                          })
-                                                        : transaction.sale_price?.toLocaleString('fr-FR', {
-                                                              style: 'currency',
-                                                              currency: 'EUR',
-                                                          })}
+                                                        ? formatCurrency(transaction.purchase_price)
+                                                        : formatCurrency(transaction.sale_price)}
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
                                                     {transaction.type === 'in'
-                                                        ? (transaction.purchase_price * transaction.quantity).toLocaleString('fr-FR', {
-                                                              style: 'currency',
-                                                              currency: 'EUR',
-                                                          })
-                                                        : (transaction.sale_price * transaction.quantity).toLocaleString('fr-FR', {
-                                                              style: 'currency',
-                                                              currency: 'EUR',
-                                                          })}
+                                                        ? formatCurrency(transaction.purchase_price * transaction.quantity)
+                                                        : formatCurrency(transaction.sale_price * transaction.quantity)}
                                                 </td>
                                             </tr>
                                         ))}

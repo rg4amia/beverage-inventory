@@ -27,19 +27,19 @@ export default function Edit({ category }: Props) {
 
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+          <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
             <div className="p-6">
               <h2 className="text-2xl font-semibold text-cave-bordeaux mb-6">Modifier la catégorie</h2>
 
               <form onSubmit={submit} className="space-y-6">
                 <div>
-                  <Label htmlFor="name">Nom</Label>
+                  <Label htmlFor="name" className="text-gray-700 dark:text-gray-200">Nom</Label>
                   <Input
                     id="name"
                     type="text"
                     name="name"
                     value={data.name}
-                    className="mt-1 block w-full"
+                    className="mt-1 block w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('name', e.target.value)}
                     required
                   />
@@ -47,12 +47,12 @@ export default function Edit({ category }: Props) {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="text-gray-700 dark:text-gray-200">Description</Label>
                   <textarea
                     id="description"
                     name="description"
                     value={data.description}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cave-bordeaux focus:ring-cave-bordeaux"
+                    className="mt-1 block w-full rounded-md bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 shadow-sm focus:border-cave-bordeaux focus:ring-cave-bordeaux"
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
                     rows={3}
                   />

@@ -21,12 +21,17 @@ class Product extends Model
     'minimum_stock',
     'barcode',
     'image_path',
+    'purchase_price',
+    'sale_price',
   ];
 
   protected $casts = [
     'price' => 'decimal:2',
     'stock_quantity' => 'integer',
     'minimum_stock' => 'integer',
+    'purchase_price' => 'decimal:2',
+    'sale_price' => 'decimal:2',
+    'image_path' => 'string',
   ];
 
   public function category(): BelongsTo

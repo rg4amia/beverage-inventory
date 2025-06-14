@@ -12,12 +12,29 @@ interface Props {
   categories: Category[];
 }
 
+interface FormData {
+  name: string;
+  category_id: string;
+  description: string;
+  price: string;
+  purchase_price: string;
+  sale_price: string;
+  stock_quantity: string;
+  minimum_stock: string;
+  barcode: string;
+  image: File | null;
+  _method: string;
+  [key: string]: any;
+}
+
 export default function Edit({ product, categories }: Props) {
-  const { data, setData, post, processing, errors } = useForm({
+  const { data, setData, post, processing, errors } = useForm<FormData>({
     name: product.name,
     category_id: product.category_id.toString(),
     description: product.description || '',
     price: product.price.toString(),
+    purchase_price: product.purchase_price.toString(),
+    sale_price: product.sale_price.toString(),
     stock_quantity: product.stock_quantity.toString(),
     minimum_stock: product.minimum_stock.toString(),
     barcode: product.barcode || '',
@@ -36,19 +53,19 @@ export default function Edit({ product, categories }: Props) {
 
       <div className="py-12">
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+          <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
             <div className="p-6">
               <h2 className="mb-6 text-2xl font-semibold text-cave-bordeaux">Modifier le produit</h2>
 
               <form onSubmit={submit} className="space-y-6">
                 <div>
-                  <Label htmlFor="name">Nom</Label>
+                  <Label htmlFor="name" className="text-gray-700 dark:text-gray-200">Nom</Label>
                   <Input
                     id="name"
                     type="text"
                     name="name"
                     value={data.name}
-                    className="block mt-1 w-full"
+                    className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('name', e.target.value)}
                     required
                   />
@@ -56,17 +73,17 @@ export default function Edit({ product, categories }: Props) {
                 </div>
 
                 <div>
-                  <Label htmlFor="category_id">Catégorie</Label>
+                  <Label htmlFor="category_id" className="text-gray-700 dark:text-gray-200">Catégorie</Label>
                   <Select
                     value={data.category_id}
                     onValueChange={(value) => setData('category_id', value)}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
                       <SelectValue placeholder="Sélectionner une catégorie" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
                       {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id.toString()}>
+                        <SelectItem key={category.id} value={category.id.toString()} className="text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
                           {category.name}
                         </SelectItem>
                       ))}
@@ -76,12 +93,12 @@ export default function Edit({ product, categories }: Props) {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="text-gray-700 dark:text-gray-200">Description</Label>
                   <textarea
                     id="description"
                     name="description"
                     value={data.description}
-                    className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-cave-bordeaux focus:ring-cave-bordeaux"
+                    className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-cave-bordeaux focus:ring-cave-bordeaux"
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
                     rows={3}
                   />
@@ -90,14 +107,14 @@ export default function Edit({ product, categories }: Props) {
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                   <div>
-                    <Label htmlFor="price">Prix</Label>
+                    <Label htmlFor="price" className="text-gray-700 dark:text-gray-200">Prix</Label>
                     <Input
                       id="price"
                       type="number"
                       step="0.01"
                       name="price"
                       value={data.price}
-                      className="block mt-1 w-full"
+                      className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('price', e.target.value)}
                       required
                     />
@@ -105,13 +122,41 @@ export default function Edit({ product, categories }: Props) {
                   </div>
 
                   <div>
-                    <Label htmlFor="stock_quantity">Quantité en stock</Label>
+                    <Label htmlFor="purchase_price" className="text-gray-700 dark:text-gray-200">Prix d'achat</Label>
+                    <Input
+                      id="purchase_price"
+                      type="number"
+                      name="purchase_price"
+                      value={data.purchase_price}
+                      className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('purchase_price', e.target.value)}
+                      required
+                    />
+                    <InputError message={errors.purchase_price} className="mt-2" />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="sale_price" className="text-gray-700 dark:text-gray-200">Prix de vente</Label>
+                    <Input
+                      id="sale_price"
+                      type="number"
+                      name="sale_price"
+                      value={data.sale_price}
+                      className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('sale_price', e.target.value)}
+                      required
+                    />
+                    <InputError message={errors.sale_price} className="mt-2" />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="stock_quantity" className="text-gray-700 dark:text-gray-200">Quantité en stock</Label>
                     <Input
                       id="stock_quantity"
                       type="number"
                       name="stock_quantity"
                       value={data.stock_quantity}
-                      className="block mt-1 w-full"
+                      className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('stock_quantity', e.target.value)}
                       required
                     />
@@ -119,13 +164,13 @@ export default function Edit({ product, categories }: Props) {
                   </div>
 
                   <div>
-                    <Label htmlFor="minimum_stock">Stock minimum</Label>
+                    <Label htmlFor="minimum_stock" className="text-gray-700 dark:text-gray-200">Stock minimum</Label>
                     <Input
                       id="minimum_stock"
                       type="number"
                       name="minimum_stock"
                       value={data.minimum_stock}
-                      className="block mt-1 w-full"
+                      className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('minimum_stock', e.target.value)}
                       required
                     />
@@ -134,20 +179,20 @@ export default function Edit({ product, categories }: Props) {
                 </div>
 
                 <div>
-                  <Label htmlFor="barcode">Code-barres</Label>
+                  <Label htmlFor="barcode" className="text-gray-700 dark:text-gray-200">Code-barres</Label>
                   <Input
                     id="barcode"
                     type="text"
                     name="barcode"
                     value={data.barcode}
-                    className="block mt-1 w-full"
+                    className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('barcode', e.target.value)}
                   />
                   <InputError message={errors.barcode} className="mt-2" />
                 </div>
 
                 <div>
-                  <Label htmlFor="image">Image</Label>
+                  <Label htmlFor="image" className="text-gray-700 dark:text-gray-200">Image</Label>
                   {product.image_path && (
                     <div className="mt-2 mb-4">
                       <img
@@ -161,7 +206,7 @@ export default function Edit({ product, categories }: Props) {
                     type="file"
                     id="image"
                     name="image"
-                    className="block mt-1 w-full"
+                    className="block mt-1 w-full text-gray-900 dark:text-gray-200"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('image', e.target.files?.[0] || null)}
                   />
                   <InputError message={errors.image} className="mt-2" />
