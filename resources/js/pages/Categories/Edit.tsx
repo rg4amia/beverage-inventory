@@ -1,4 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Category } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import { Label } from '@/components/ui/label';
@@ -27,10 +28,11 @@ export default function Edit({ category }: Props) {
 
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
-            <div className="p-6">
-              <h2 className="text-2xl font-semibold text-cave-bordeaux mb-6">Modifier la catégorie</h2>
-
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl font-semibold text-cave-bordeaux">Modifier la catégorie</CardTitle>
+            </CardHeader>
+            <CardContent>
               <form onSubmit={submit} className="space-y-6">
                 <div>
                   <Label htmlFor="name" className="text-gray-700 dark:text-gray-200">Nom</Label>
@@ -69,8 +71,8 @@ export default function Edit({ category }: Props) {
                   </Button>
                 </div>
               </form>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AppLayout>

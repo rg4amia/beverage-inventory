@@ -47,19 +47,31 @@ class TransactionController extends Controller
         ], 422);
       }
 
+      // Déterminer les prix d'achat et de vente
+      $purchase_price = $request->type === 'in' ? $request->unit_price : $product->purchase_price;
+      $sale_price = $request->type === 'out' ? $request->unit_price : $product->sale_price;
+
       // Créer la transaction
       $transaction = Transaction::create([
         'product_id' => $request->product_id,
-        'user_id' => auth()->id(),
+        'user_id' => auth()->user()->id,
         'type' => $request->type,
         'quantity' => $request->quantity,
         'unit_price' => $request->unit_price,
         'total_price' => $request->quantity * $request->unit_price,
+        'purchase_price' => $purchase_price,
+        'sale_price' => $sale_price,
         'notes' => $request->notes,
       ]);
 
       // Mettre à jour le stock
       $product->stock_quantity += ($request->type === 'in' ? $request->quantity : -$request->quantity);
+
+      // Mettre à jour les prix du produit si c'est une entrée
+      if ($request->type === 'in') {
+        $product->purchase_price = $request->unit_price;
+      }
+
       $product->save();
 
       DB::commit();

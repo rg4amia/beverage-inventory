@@ -85,23 +85,23 @@ export default function Dashboard({
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     {/* Statistiques générales */}
                     <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-4">
-                        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                        <div className="p-4 bg-white rounded-lg shadow-sm dark:bg-gray-800">
                             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Total des produits</h3>
                             <p className="mt-2 text-3xl font-bold text-cave-bordeaux">{totalProducts}</p>
                         </div>
-                        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                        <div className="p-4 bg-white rounded-lg shadow-sm dark:bg-gray-800">
                             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Valeur totale</h3>
                             <p className="mt-2 text-3xl font-bold text-cave-bordeaux">
                                 {formatCurrency(totalValue)}
                             </p>
                         </div>
-                        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                        <div className="p-4 bg-white rounded-lg shadow-sm dark:bg-gray-800">
                             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Ventes du mois</h3>
                             <p className="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">
                                 {formatCurrency(financialStats.monthly_sales)}
                             </p>
                         </div>
-                        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                        <div className="p-4 bg-white rounded-lg shadow-sm dark:bg-gray-800">
                             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Bénéfice du mois</h3>
                             <p className="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">
                                 {formatCurrency(financialStats.monthly_profit)}
@@ -111,29 +111,29 @@ export default function Dashboard({
 
                     <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
                         {/* Statistiques financières */}
-                        <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
+                        <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
                             <div className="p-6">
                                 <h3 className="mb-4 text-lg font-semibold text-cave-bordeaux">Statistiques financières</h3>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                    <div className="p-4 bg-gray-100 rounded-lg dark:bg-gray-700">
                                         <p className="text-sm text-gray-600 dark:text-gray-400">Total des achats</p>
                                         <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                                             {formatCurrency(financialStats.total_purchases)}
                                         </p>
                                     </div>
-                                    <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                    <div className="p-4 bg-gray-100 rounded-lg dark:bg-gray-700">
                                         <p className="text-sm text-gray-600 dark:text-gray-400">Total des ventes</p>
                                         <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                                             {formatCurrency(financialStats.total_sales)}
                                         </p>
                                     </div>
-                                    <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                    <div className="p-4 bg-gray-100 rounded-lg dark:bg-gray-700">
                                         <p className="text-sm text-gray-600 dark:text-gray-400">Bénéfice total</p>
                                         <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                                             {formatCurrency(financialStats.total_profit)}
                                         </p>
                                     </div>
-                                    <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                    <div className="p-4 bg-gray-100 rounded-lg dark:bg-gray-700">
                                         <p className="text-sm text-gray-600 dark:text-gray-400">Marge moyenne</p>
                                         <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                                             {((financialStats.total_profit / financialStats.total_sales) * 100).toFixed(1)}%
@@ -144,12 +144,12 @@ export default function Dashboard({
                         </div>
 
                         {/* Produits les plus vendus */}
-                        <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
+                        <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
                             <div className="p-6">
                                 <h3 className="mb-4 text-lg font-semibold text-cave-bordeaux">Produits les plus vendus</h3>
                                 <div className="space-y-4">
                                     {topProducts.map((item, index) => (
-                                        <div key={index} className="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                        <div key={index} className="flex justify-between items-center p-4 bg-gray-100 rounded-lg dark:bg-gray-700">
                                             <div>
                                                 <p className="font-medium text-gray-900 dark:text-gray-200">{item.product.name}</p>
                                                 <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -173,12 +173,12 @@ export default function Dashboard({
 
                     <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
                         {/* Stocks par catégorie */}
-                        <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
+                        <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
                             <div className="p-6">
                                 <h3 className="mb-4 text-lg font-semibold text-cave-bordeaux">Stocks par catégorie</h3>
                                 <div className="space-y-4">
                                     {stockByCategory.map((category, index) => (
-                                        <div key={index} className="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                        <div key={index} className="flex justify-between items-center p-4 bg-gray-100 rounded-lg dark:bg-gray-700">
                                             <div>
                                                 <p className="font-medium text-gray-900 dark:text-gray-200">{category.name}</p>
                                                 <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -197,7 +197,7 @@ export default function Dashboard({
                         </div>
 
                         {/* Alertes de stock */}
-                        <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
+                        <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
                             <div className="p-6">
                                 <h3 className="mb-4 text-lg font-semibold text-cave-bordeaux">Alertes de stock</h3>
                                 {lowStockProducts.length > 0 ? (
@@ -205,7 +205,7 @@ export default function Dashboard({
                                         {lowStockProducts.map((product) => (
                                             <div
                                                 key={product.id}
-                                                className="p-4 bg-red-50 dark:bg-red-900/50 rounded-lg border border-red-200 dark:border-red-800"
+                                                className="p-4 bg-red-50 rounded-lg border border-red-200 dark:bg-red-900/50 dark:border-red-800"
                                             >
                                                 <div className="flex justify-between items-start">
                                                     <div>
@@ -232,7 +232,7 @@ export default function Dashboard({
                     </div>
 
                     {/* Transactions récentes */}
-                    <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
+                    <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
                         <div className="p-6">
                             <h3 className="mb-4 text-lg font-semibold text-cave-bordeaux">
                                 Transactions récentes
@@ -241,30 +241,30 @@ export default function Dashboard({
                                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead className="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-gray-400">
                                                 Date
                                             </th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-gray-400">
                                                 Produit
                                             </th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-gray-400">
                                                 Type
                                             </th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-gray-400">
                                                 Quantité
                                             </th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-gray-400">
                                                 Prix
                                             </th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 dark:text-gray-400 uppercase">
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-gray-400">
                                                 Total
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                         {recentTransactions.map((transaction) => (
                                             <tr key={transaction.id}>
-                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                                                <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap dark:text-gray-400">
                                                     {new Date(transaction.created_at).toLocaleDateString('fr-FR')}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -283,15 +283,15 @@ export default function Dashboard({
                                                         {transaction.type === 'in' ? 'Entrée' : 'Sortie'}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                                                <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap dark:text-gray-400">
                                                     {transaction.quantity}
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                                                <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap dark:text-gray-400">
                                                     {transaction.type === 'in'
                                                         ? formatCurrency(transaction.purchase_price)
                                                         : formatCurrency(transaction.sale_price)}
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                                                <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap dark:text-gray-400">
                                                     {transaction.type === 'in'
                                                         ? formatCurrency(transaction.purchase_price * transaction.quantity)
                                                         : formatCurrency(transaction.sale_price * transaction.quantity)}

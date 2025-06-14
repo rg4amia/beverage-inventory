@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Product } from '@/types';
+import { Product, Transaction } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import InputError from '@/components/input-error';
 import { Label } from '@/components/ui/label';
@@ -9,41 +9,32 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState } from 'react';
 import { formatCurrency } from '@/utils/currency';
-import { type BreadcrumbItem } from '@/types';
 
 interface Props {
-  type: 'in' | 'out';
+  transaction: Transaction;
   products: Product[];
 }
 
-export default function Create({ type, products }: Props) {
+export default function Edit({ transaction, products }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
-  const { data, setData, post, processing, errors } = useForm({
-    product_id: '',
-    quantity: '',
-    unit_price: '',
-    purchase_price: '',
-    sale_price: '',
-    notes: '',
-    type: type,
+  const { data, setData, put, processing, errors } = useForm({
+    product_id: transaction.product_id.toString(),
+    quantity: transaction.quantity.toString(),
+    unit_price: transaction.unit_price.toString(),
+    purchase_price: transaction.purchase_price?.toString() || '',
+    sale_price: transaction.sale_price?.toString() || '',
+    notes: transaction.notes || '',
   });
-
-  const breadcrumbs: BreadcrumbItem[] = [
-    {
-      title: 'Transactions',
-      href: route('transactions.index'),
-    },
-  ];
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(route('transactions.store', { type }), {
+    put(route('transactions.update', transaction.id), {
       onSuccess: () => {
         // Optionnel : Ajouter un message de succès ou une redirection personnalisée
       },
       onError: (errors) => {
         // Optionnel : Gérer les erreurs spécifiques
-        console.error('Erreur lors de la création de la transaction:', errors);
+        console.error('Erreur lors de la mise à jour de la transaction:', errors);
       }
     });
   };
@@ -59,7 +50,7 @@ export default function Create({ type, products }: Props) {
       setData('purchase_price', product.purchase_price?.toString() || '');
       setData('sale_price', product.sale_price?.toString() || '');
       // Définir le prix unitaire en fonction du type de transaction
-      if (type === 'in') {
+      if (transaction.type === 'in') {
         setData('unit_price', product.purchase_price?.toString() || '');
       } else {
         setData('unit_price', product.sale_price?.toString() || '');
@@ -68,50 +59,48 @@ export default function Create({ type, products }: Props) {
   };
 
   return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title={type === 'in' ? 'Entrée de stock' : 'Sortie de stock'} />
+    <AppLayout>
+      <Head title="Modifier la transaction" />
 
       <div className="py-12">
-        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl font-semibold text-cave-bordeaux">
-                {type === 'in' ? 'Nouvelle entrée de stock' : 'Nouvelle sortie de stock'}
-              </CardTitle>
+              <CardTitle className="text-2xl font-semibold text-cave-bordeaux">Modifier la transaction</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={submit} className="space-y-6">
                 <div>
-                  <Label htmlFor="product_id" className="text-gray-700 dark:text-gray-200">Produit</Label>
+                  <Label htmlFor="product" className="text-gray-700 dark:text-gray-200">Produit</Label>
                   <Select
                     value={data.product_id}
                     onValueChange={handleProductSelect}
                   >
                     <SelectTrigger className="w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600">
-                      <SelectValue placeholder="Sélectionnez un produit" />
+                      <SelectValue placeholder="Sélectionner un produit" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-600">
                       <div className="sticky top-0 z-10 p-2 bg-white dark:bg-gray-700">
                         <Input
                           type="text"
                           placeholder="Rechercher un produit..."
-                          className="w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-600 dark:border-gray-500"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
+                          className="w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-600 dark:border-gray-500"
                           onClick={(e) => e.stopPropagation()}
                         />
                       </div>
-                      {filteredProducts.length === 0 ? (
-                        <div className="p-2 text-center text-gray-500 dark:text-gray-400">Aucun produit trouvé</div>
-                      ) : (
-                        filteredProducts.map((product) => (
-                          <SelectItem key={product.id} value={product.id.toString()} className="text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
-                            {product.name} - Stock actuel: {product.stock_quantity}
-                            {type === 'in' && product.purchase_price && ` (Prix d'achat: ${formatCurrency(product.purchase_price)})`}
-                            {type === 'out' && product.sale_price && ` (Prix de vente: ${formatCurrency(product.sale_price)})`}
-                          </SelectItem>
-                        ))
-                      )}
+                      {filteredProducts.map((product) => (
+                        <SelectItem
+                          key={product.id}
+                          value={product.id.toString()}
+                          className="text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                        >
+                          {product.name} - Stock actuel: {product.stock_quantity}
+                          {transaction.type === 'in' && product.purchase_price && ` (Prix d'achat: ${formatCurrency(product.purchase_price)})`}
+                          {transaction.type === 'out' && product.sale_price && ` (Prix de vente: ${formatCurrency(product.sale_price)})`}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <InputError message={errors.product_id} className="mt-2" />
@@ -164,7 +153,7 @@ export default function Create({ type, products }: Props) {
 
                   <div>
                     <Label htmlFor="unit_price" className="text-gray-700 dark:text-gray-200">
-                      {type === 'in' ? 'Prix d\'achat unitaire' : 'Prix de vente unitaire'}
+                      {transaction.type === 'in' ? 'Prix d\'achat unitaire' : 'Prix de vente unitaire'}
                     </Label>
                     <Input
                       id="unit_price"
@@ -198,7 +187,7 @@ export default function Create({ type, products }: Props) {
                     className="ml-4"
                     disabled={processing}
                   >
-                    {type === 'in' ? 'Enregistrer l\'entrée' : 'Enregistrer la sortie'}
+                    Mettre à jour la transaction
                   </Button>
                 </div>
               </form>
@@ -208,4 +197,4 @@ export default function Create({ type, products }: Props) {
       </div>
     </AppLayout>
   );
-}
+} 

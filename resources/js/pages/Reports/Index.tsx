@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
-import { Head } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import React, { useState, useEffect } from 'react';
+import { Head, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
+import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
+import AppLayout from '@/layouts/app-layout';
 import axios from 'axios';
-import { Line, Bar } from 'react-chartjs-2';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -14,8 +20,9 @@ import {
     Title,
     Tooltip,
     Legend,
+    ArcElement,
 } from 'chart.js';
-import { formatCurrency } from '@/utils/currency';
+import { Line, Bar, Pie } from 'react-chartjs-2';
 
 ChartJS.register(
     CategoryScale,
@@ -25,151 +32,128 @@ ChartJS.register(
     BarElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
+    ArcElement
 );
 
-interface ReportData {
-    date: string;
-    sales_quantity: number;
-    purchase_quantity: number;
-    sales_amount: number;
-    purchase_amount: number;
-    profit: number;
+interface Transaction {
+    id: number;
+    created_at: string;
+    product: {
+        name: string;
+        price: number;
+    };
+    quantity: number;
+    type: string;
+    user: {
+        name: string;
+    };
 }
 
-interface Summary {
-    total_sales: number;
-    total_purchases: number;
-    total_profit: number;
-    total_sales_quantity: number;
-    total_purchase_quantity: number;
+interface Stats {
+    total_transactions: number;
+    total_quantity: number;
+    total_value: number;
+    by_type: Record<string, { count: number; quantity: number; value: number }>;
+    by_product: Record<string, { name: string; count: number; quantity: number; value: number }>;
+    daily_stats: Record<string, { count: number; quantity: number; value: number }>;
 }
 
 export default function Reports({ auth }: PageProps) {
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [groupBy, setGroupBy] = useState('day');
-    const [type, setType] = useState('all');
-    const [report, setReport] = useState<ReportData[]>([]);
-    const [summary, setSummary] = useState<Summary>({
-        total_sales: 0,
-        total_purchases: 0,
-        total_profit: 0,
-        total_sales_quantity: 0,
-        total_purchase_quantity: 0,
+    const { data, setData, post, processing } = useForm({
+        type: 'daily',
+        format: 'pdf',
+        start_date: '',
+        end_date: '',
     });
-    const [loading, setLoading] = useState(false);
-    const [showCharts, setShowCharts] = useState(false);
 
-    const fetchReport = async () => {
-        setLoading(true);
+    const [previewData, setPreviewData] = useState<{
+        transactions: Transaction[];
+        stats: Stats;
+    } | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
         try {
-            const response = await axios.get('/api/reports', {
-                params: {
-                    start_date: startDate,
-                    end_date: endDate,
-                    group_by: groupBy,
-                    type: type,
-                },
-            });
-            setReport(response.data.report);
-            setSummary(response.data.summary);
+            const response = await axios.post(route('reports.generate'), data);
+            if (response.data.download_url) {
+                // Créer un lien temporaire pour le téléchargement
+                const link = document.createElement('a');
+                link.href = response.data.download_url;
+                link.download = response.data.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         } catch (error) {
-            console.error('Error fetching report:', error);
-        }
-        setLoading(false);
-    };
-
-    const handleExport = async (format: 'csv' | 'xlsx') => {
-        try {
-            const response = await axios.get('/api/reports/export', {
-                params: {
-                    start_date: startDate,
-                    end_date: endDate,
-                    group_by: groupBy,
-                    type: type,
-                    format: format,
-                },
-                responseType: 'blob',
-            });
-
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `rapport_${startDate}_${endDate}.${format}`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-        } catch (error) {
-            console.error('Error exporting report:', error);
+            console.error('Error generating report:', error);
         }
     };
 
-    const chartData = {
-        labels: report.map(item => item.date),
-        datasets: [
-            {
-                label: 'Ventes (€)',
-                data: report.map(item => Number(item.sales_amount)),
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1,
-            },
-            {
-                label: 'Achats (€)',
-                data: report.map(item => Number(item.purchase_amount)),
-                borderColor: 'rgb(255, 99, 132)',
-                tension: 0.1,
-            },
-            {
-                label: 'Profit (€)',
-                data: report.map(item => Number(item.profit)),
-                borderColor: 'rgb(54, 162, 235)',
-                tension: 0.1,
-            },
-        ],
+    const handlePreview = async () => {
+        try {
+            const response = await axios.post(route('reports.preview'), {
+                start_date: data.start_date,
+                end_date: data.end_date,
+            });
+            setPreviewData(response.data);
+        } catch (error) {
+            console.error('Error fetching preview:', error);
+        }
     };
 
-    const barData = {
-        labels: report.map(item => item.date),
-        datasets: [
-            {
-                label: 'Ventes (Qté)',
-                data: report.map(item => Number(item.sales_quantity)),
+    const prepareChartData = (data: any) => {
+        if (!data) return null;
+
+        // Données pour le graphique des transactions par jour
+        const dailyData = {
+            labels: Object.keys(data.stats.daily_stats).map(date => 
+                format(new Date(date), 'dd/MM', { locale: fr })
+            ),
+            datasets: [
+                {
+                    label: 'Nombre de transactions',
+                    data: Object.values(data.stats.daily_stats).map(stat => stat.count),
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1,
+                },
+                {
+                    label: 'Quantité',
+                    data: Object.values(data.stats.daily_stats).map(stat => stat.quantity),
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1,
+                }
+            ]
+        };
+
+        // Données pour le graphique des types de transactions
+        const typeData = {
+            labels: Object.keys(data.stats.by_type),
+            datasets: [{
+                data: Object.values(data.stats.by_type).map(stat => stat.count),
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 206, 86)',
+                    'rgb(75, 192, 192)',
+                ],
+            }]
+        };
+
+        // Données pour le graphique des produits les plus vendus
+        const productData = {
+            labels: Object.values(data.stats.by_product).map(stat => stat.name),
+            datasets: [{
+                label: 'Quantité vendue',
+                data: Object.values(data.stats.by_product).map(stat => stat.quantity),
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
-            },
-            {
-                label: 'Achats (Qté)',
-                data: report.map(item => Number(item.purchase_quantity)),
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            },
-        ],
+            }]
+        };
+
+        return { dailyData, typeData, productData };
     };
 
-    const chartOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top' as const,
-            },
-            title: {
-                display: true,
-                text: 'Évolution des ventes, achats et profits',
-            },
-        },
-    };
-
-    const barOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top' as const,
-            },
-            title: {
-                display: true,
-                text: 'Quantités de ventes et d\'achats',
-            },
-        },
-    };
+    const chartData = previewData ? prepareChartData(previewData) : null;
 
     return (
         <AppLayout
@@ -180,145 +164,284 @@ export default function Reports({ auth }: PageProps) {
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-gray-800 shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-200">
-                            <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300">Date de début</label>
-                                    <input
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(e) => {
-                                            setStartDate(e.target.value);
-                                            fetchReport();
-                                        }}
-                                        className="block mt-1 w-full text-gray-200 bg-gray-700 rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300">Date de fin</label>
-                                    <input
-                                        type="date"
-                                        value={endDate}
-                                        onChange={(e) => {
-                                            setEndDate(e.target.value);
-                                            fetchReport();
-                                        }}
-                                        className="block mt-1 w-full text-gray-200 bg-gray-700 rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300">Grouper par</label>
-                                    <select
-                                        value={groupBy}
-                                        onChange={(e) => {
-                                            setGroupBy(e.target.value);
-                                            fetchReport();
-                                        }}
-                                        className="block mt-1 w-full text-gray-200 bg-gray-700 rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    >
-                                        <option value="day">Jour</option>
-                                        <option value="month">Mois</option>
-                                        <option value="year">Année</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300">Type</label>
-                                    <select
-                                        value={type}
-                                        onChange={(e) => {
-                                            setType(e.target.value);
-                                            fetchReport();
-                                        }}
-                                        className="block mt-1 w-full text-gray-200 bg-gray-700 rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    >
-                                        <option value="all">Tous</option>
-                                        <option value="sale">Ventes</option>
-                                        <option value="purchase">Achats</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end mb-6 space-x-4">
-                                <button
-                                    onClick={() => handleExport('csv')}
-                                    className="px-4 py-2 text-sm font-medium text-gray-200 bg-gray-700 rounded-md border border-gray-600 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    Exporter CSV
-                                </button>
-                                <button
-                                    onClick={() => handleExport('xlsx')}
-                                    className="px-4 py-2 text-sm font-medium text-gray-200 bg-gray-700 rounded-md border border-gray-600 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    Exporter Excel
-                                </button>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-3">
-                                <div className="p-4 bg-gray-700 rounded-lg">
-                                    <h3 className="text-lg font-medium text-gray-200">Total Ventes</h3>
-                                    <p className="text-2xl font-bold text-green-400">{formatCurrency(summary.total_sales)}</p>
-                                </div>
-                                <div className="p-4 bg-gray-700 rounded-lg">
-                                    <h3 className="text-lg font-medium text-gray-200">Total Achats</h3>
-                                    <p className="text-2xl font-bold text-red-400">{formatCurrency(summary.total_purchases)}</p>
-                                </div>
-                                <div className="p-4 bg-gray-700 rounded-lg">
-                                    <h3 className="text-lg font-medium text-gray-200">Profit Total</h3>
-                                    <p className="text-2xl font-bold text-blue-400">{formatCurrency(summary.total_profit)}</p>
-                                </div>
-                            </div>
-
-                            <div className="mb-6">
-                                <button
-                                    onClick={() => setShowCharts(!showCharts)}
-                                    className="px-4 py-2 text-sm font-medium text-gray-200 bg-gray-700 rounded-md border border-gray-600 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    {showCharts ? 'Masquer les graphiques' : 'Afficher les graphiques'}
-                                </button>
-                            </div>
-
-                            {showCharts && (
-                                <div className="space-y-6">
-                                    <div className="p-4 bg-gray-700 rounded-lg">
-                                        <Line data={chartData} options={chartOptions} />
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Générer un rapport</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="type">Type de rapport</Label>
+                                        <Select
+                                            value={data.type}
+                                            onValueChange={(value) => setData('type', value)}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Sélectionner le type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="daily">Journalier</SelectItem>
+                                                <SelectItem value="weekly">Hebdomadaire</SelectItem>
+                                                <SelectItem value="monthly">Mensuel</SelectItem>
+                                                <SelectItem value="yearly">Annuel</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </div>
-                                    <div className="p-4 bg-gray-700 rounded-lg">
-                                        <Bar data={barData} options={barOptions} />
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="format">Format</Label>
+                                        <Select
+                                            value={data.format}
+                                            onValueChange={(value) => setData('format', value)}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Sélectionner le format" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="pdf">PDF</SelectItem>
+                                                <SelectItem value="xls">Excel</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="start_date">Date de début</Label>
+                                        <Input
+                                            type="date"
+                                            id="start_date"
+                                            value={data.start_date}
+                                            onChange={(e) => setData('start_date', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="end_date">Date de fin</Label>
+                                        <Input
+                                            type="date"
+                                            id="end_date"
+                                            value={data.end_date}
+                                            onChange={(e) => setData('end_date', e.target.value)}
+                                            required
+                                        />
                                     </div>
                                 </div>
-                            )}
 
-                            <div className="overflow-x-auto mt-6">
-                                <table className="min-w-full divide-y divide-gray-600">
-                                    <thead className="bg-gray-700">
-                                        <tr>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Date</th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Ventes (Qté)</th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Achats (Qté)</th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Ventes (€)</th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Achats (€)</th>
-                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Profit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-gray-800 divide-y divide-gray-700">
-                                        {report.map((item, index) => (
-                                            <tr key={index} className="hover:bg-gray-700">
-                                                <td className="px-6 py-4 text-sm text-gray-200 whitespace-nowrap">{item.date}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-200 whitespace-nowrap">{item.sales_quantity}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-200 whitespace-nowrap">{item.purchase_quantity}</td>
-                                                <td className="px-6 py-4 text-sm text-green-400 whitespace-nowrap">{formatCurrency(item.sales_amount)}</td>
-                                                <td className="px-6 py-4 text-sm text-red-400 whitespace-nowrap">{formatCurrency(item.purchase_amount)}</td>
-                                                <td className="px-6 py-4 text-sm text-blue-400 whitespace-nowrap">{formatCurrency(item.profit)}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                <div className="flex gap-4">
+                                    <Button type="button" onClick={handlePreview}>
+                                        Prévisualiser
+                                    </Button>
+                                    <Button type="submit" disabled={processing}>
+                                        Générer le rapport
+                                    </Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+
+                    {previewData && (
+                        <div className="mt-8 space-y-8">
+                            {/* Statistiques générales */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Statistiques générales</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                        <div className="p-4 bg-gray-50 rounded-lg">
+                                            <h3 className="text-sm font-medium text-gray-500">Total des transactions</h3>
+                                            <p className="mt-2 text-3xl font-semibold">{previewData.stats.total_transactions}</p>
+                                        </div>
+                                        <div className="p-4 bg-gray-50 rounded-lg">
+                                            <h3 className="text-sm font-medium text-gray-500">Quantité totale</h3>
+                                            <p className="mt-2 text-3xl font-semibold">{previewData.stats.total_quantity}</p>
+                                        </div>
+                                        <div className="p-4 bg-gray-50 rounded-lg">
+                                            <h3 className="text-sm font-medium text-gray-500">Valeur totale</h3>
+                                            <p className="mt-2 text-3xl font-semibold">{previewData.stats.total_value.toFixed(2)} €</p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Statistiques par type */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Statistiques par type</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Type</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Nombre</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Quantité</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Valeur</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {Object.entries(previewData.stats.by_type).map(([type, stats]) => (
+                                                    <tr key={type}>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{type}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.count}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.quantity}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.value.toFixed(2)} €</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Statistiques par produit */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Statistiques par produit</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Produit</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Nombre</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Quantité</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Valeur</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {Object.entries(previewData.stats.by_product).map(([id, stats]) => (
+                                                    <tr key={id}>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.name}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.count}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.quantity}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.value.toFixed(2)} €</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Graphiques */}
+                            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                                {/* Graphique des transactions par jour */}
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Évolution des transactions</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {chartData && (
+                                            <Line
+                                                data={chartData.dailyData}
+                                                options={{
+                                                    responsive: true,
+                                                    plugins: {
+                                                        legend: {
+                                                            position: 'top' as const,
+                                                        },
+                                                        title: {
+                                                            display: true,
+                                                            text: 'Transactions par jour',
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        )}
+                                    </CardContent>
+                                </Card>
+
+                                {/* Graphique des types de transactions */}
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Répartition par type</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {chartData && (
+                                            <Pie
+                                                data={chartData.typeData}
+                                                options={{
+                                                    responsive: true,
+                                                    plugins: {
+                                                        legend: {
+                                                            position: 'top' as const,
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        )}
+                                    </CardContent>
+                                </Card>
+
+                                {/* Graphique des produits les plus vendus */}
+                                <Card className="md:col-span-2">
+                                    <CardHeader>
+                                        <CardTitle>Produits les plus vendus</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {chartData && (
+                                            <Bar
+                                                data={chartData.productData}
+                                                options={{
+                                                    responsive: true,
+                                                    plugins: {
+                                                        legend: {
+                                                            position: 'top' as const,
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        )}
+                                    </CardContent>
+                                </Card>
                             </div>
+
+                            {/* Tableau des transactions */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Transactions</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Date</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Produit</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Quantité</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Type</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Utilisateur</th>
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Valeur</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {previewData.transactions.map((transaction) => (
+                                                    <tr key={transaction.id}>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                                                            {format(new Date(transaction.created_at), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{transaction.product.name}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{transaction.quantity}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{transaction.type}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{transaction.user.name}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                                                            {(transaction.quantity * transaction.product.price).toFixed(2)} €
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </AppLayout>
     );
-}
+} 

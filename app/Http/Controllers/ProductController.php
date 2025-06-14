@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\ActionLog;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +19,7 @@ class ProductController extends Controller
     {
         $products = Product::with('category')
             ->latest()
-            ->paginate(10);
+            ->paginate(6);
 
         return Inertia::render('Products/Index', [
             'products' => $products
@@ -47,7 +49,13 @@ class ProductController extends Controller
                 $validated['image_path'] = $path;
             }
 
-            Product::create($validated);
+           $product = Product::create($validated);
+
+            ActionLog::create([
+                'user_id' => Auth::id(),
+                'action' => "Produit #{$product->id} créée par " . Auth::user()->name,
+                'date_heure' => now(),
+            ]);
 
             DB::commit();
 
@@ -88,6 +96,12 @@ class ProductController extends Controller
 
             $product->update($validated);
 
+            ActionLog::create([
+                'user_id' => Auth::id(),
+                'action' => "Produit #{$product->id} mise à jour par " . Auth::user()->name,
+                'date_heure' => now(),
+            ]);
+
             DB::commit();
 
             return redirect()->route('products.index')
@@ -102,6 +116,11 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        ActionLog::create([
+            'user_id' => Auth::id(),
+            'action' => "Produit #{$product->id} supprimé par " . Auth::user()->name,
+            'date_heure' => now(),
+        ]);
         $product->delete();
 
         return redirect()->route('products.index')

@@ -13,8 +13,10 @@ return new class extends Migration {
       $table->foreignId('user_id')->constrained()->onDelete('cascade');
       $table->enum('type', ['in', 'out']);
       $table->integer('quantity');
-      $table->decimal('unit_price', 10, 2);
-      $table->decimal('total_price', 10, 2);
+      $table->decimal('unit_price', 10, 2)->nullable();
+      $table->decimal('purchase_price', 10, 2)->nullable();
+      $table->decimal('sale_price', 10, 2)->nullable();
+      $table->decimal('total_price', 10, 2)->nullable();
       $table->text('notes')->nullable();
       $table->timestamps();
     });

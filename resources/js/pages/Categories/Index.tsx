@@ -3,6 +3,7 @@ import { Category } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import Pagination from '@/Components/Pagination';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePage } from '@inertiajs/react';
 
 interface Props {
@@ -31,11 +32,11 @@ export default function Index({ categories }: Props) {
               <AlertDescription>{flash.error}</AlertDescription>
             </Alert>
           )}
-          <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
-            <div className="p-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <Card>
+            <CardHeader>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-200">Liste des catégories</h2>
+                  <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-200">Liste des catégories</CardTitle>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     Gérez vos catégories de produits
                   </p>
@@ -50,14 +51,12 @@ export default function Index({ categories }: Props) {
                   Ajouter une catégorie
                 </Link>
               </div>
-
+            </CardHeader>
+            <CardContent>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {categories.data.map((category) => (
-                  <div
-                    key={category.id}
-                    className="bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200"
-                  >
-                    <div className="p-6">
+                  <Card key={category.id} className="hover:shadow-md transition-all duration-200">
+                    <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-200">{category.name}</h3>
                         <div className="flex space-x-2">
@@ -89,8 +88,8 @@ export default function Index({ categories }: Props) {
                           {category.products_count} produits
                         </span>
                       </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
 
@@ -107,8 +106,8 @@ export default function Index({ categories }: Props) {
               <div className="mt-8">
                 <Pagination links={categories.links} />
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AppLayout>

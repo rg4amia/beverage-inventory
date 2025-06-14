@@ -12,8 +12,8 @@ export default function Welcome() {
             </Head>
             <div className="min-h-screen bg-gradient-to-b from-[#FDFDFC] to-[#F8F8F7] dark:from-[#0a0a0a] dark:to-[#1a1a1a]">
                 {/* Navigation */}
-                <nav className="container px-6 py-4 mx-auto">
-                    <div className="flex justify-between items-center">
+                <nav className="container mx-auto px-6 py-4">
+                    <div className="flex items-center justify-between">
                         <div className="text-2xl font-bold text-[#1b1b18] dark:text-white">
                             Beverage Inventory
                         </div>
@@ -46,13 +46,13 @@ export default function Welcome() {
                 </nav>
 
                 {/* Hero Section */}
-                <div className="container px-6 py-16 mx-auto">
-                    <div className="flex flex-col justify-between items-center lg:flex-row">
-                        <div className="mb-12 lg:w-1/2 lg:mb-0">
+                <div className="container mx-auto px-6 py-16">
+                    <div className="flex flex-col lg:flex-row items-center justify-between">
+                        <div className="lg:w-1/2 mb-12 lg:mb-0">
                             <h1 className="text-4xl lg:text-6xl font-bold text-[#1b1b18] dark:text-white mb-6">
                                 Gérez votre inventaire de boissons avec facilité
                             </h1>
-                            <p className="mb-8 text-lg text-gray-600 dark:text-gray-300">
+                            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
                                 Une solution complète pour suivre, gérer et optimiser votre stock de boissons. 
                                 Simplifiez votre gestion d'inventaire dès aujourd'hui.
                             </p>
@@ -72,19 +72,19 @@ export default function Welcome() {
                             </div>
                         </div>
                         <div className="lg:w-1/2">
-                            <div className="relative mx-auto w-full max-w-lg">
+                            <div className="relative w-full max-w-lg mx-auto">
                                 <div className="absolute inset-0 bg-[#4B0600] rounded-lg transform rotate-3"></div>
-                                <div className="relative p-8 bg-white rounded-lg shadow-xl">
+                                <div className="relative bg-white p-8 rounded-lg shadow-xl">
                                     <div className="space-y-4">
-                                        <div className="flex justify-between items-center">
+                                        <div className="flex items-center justify-between">
                                             <span className="text-gray-600">Stock actuel</span>
                                             <span className="font-semibold">1,234</span>
                                         </div>
-                                        <div className="flex justify-between items-center">
+                                        <div className="flex items-center justify-between">
                                             <span className="text-gray-600">Produits en alerte</span>
                                             <span className="text-[#4B0600] font-semibold">12</span>
                                         </div>
-                                        <div className="flex justify-between items-center">
+                                        <div className="flex items-center justify-between">
                                             <span className="text-gray-600">Ventes du mois</span>
                                             <span className="font-semibold">456</span>
                                         </div>
@@ -97,11 +97,11 @@ export default function Welcome() {
 
                 {/* Features Section */}
                 <div id="features" className="bg-white dark:bg-[#161615] py-20">
-                    <div className="container px-6 mx-auto">
+                    <div className="container mx-auto px-6">
                         <h2 className="text-3xl font-bold text-center text-[#1b1b18] dark:text-white mb-12">
                             Fonctionnalités principales
                         </h2>
-                        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             <div className="p-6 rounded-lg bg-[#FDFDFC] dark:bg-[#1a1a1a] shadow-lg">
                                 <div className="text-[#4B0600] dark:text-[#FF750F] mb-4">
                                     <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,11 +147,11 @@ export default function Welcome() {
 
                 {/* CTA Section */}
                 <div className="bg-[#4B0600] dark:bg-[#1D0002] py-20">
-                    <div className="container px-6 mx-auto text-center">
-                        <h2 className="mb-8 text-3xl font-bold text-white">
+                    <div className="container mx-auto px-6 text-center">
+                        <h2 className="text-3xl font-bold text-white mb-8">
                             Prêt à optimiser votre gestion d'inventaire ?
                         </h2>
-                        <p className="mx-auto mb-8 max-w-2xl text-gray-200">
+                        <p className="text-gray-200 mb-8 max-w-2xl mx-auto">
                             Rejoignez des centaines d'entreprises qui font confiance à Beverage Inventory pour gérer leur stock de boissons.
                         </p>
                         <Link
@@ -165,8 +165,8 @@ export default function Welcome() {
 
                 {/* Footer */}
                 <footer className="bg-[#FDFDFC] dark:bg-[#0a0a0a] py-12">
-                    <div className="container px-6 mx-auto">
-                        <div className="flex flex-col justify-between items-center md:flex-row">
+                    <div className="container mx-auto px-6">
+                        <div className="flex flex-col md:flex-row justify-between items-center">
                             <div className="text-[#1b1b18] dark:text-white mb-4 md:mb-0">
                                 © 2024 Beverage Inventory. Tous droits réservés.
                             </div>

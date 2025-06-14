@@ -1,5 +1,5 @@
-export const formatCurrency = (amount: number | null): string => {
-    if (amount === null) return '0 XOF';
+export const formatCurrency = (amount: number | null | undefined): string => {
+    if (amount === null || amount === undefined) return '0 XOF';
     return amount.toLocaleString('fr-FR', {
         style: 'currency',
         currency: 'XOF',

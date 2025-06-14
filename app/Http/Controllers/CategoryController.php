@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActionLog;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -34,7 +36,13 @@ class CategoryController extends Controller
 
     $validated['slug'] = Str::slug($validated['name']);
 
-    Category::create($validated);
+    $category = Category::create($validated);
+
+    ActionLog::create([
+        'user_id' => Auth::id(),
+        'action' => "Catégorie #{$category->id} crée par " . Auth::user()->name,
+        'date_heure' => now(),
+    ]);
 
     return redirect()->route('categories.index')
       ->with('success', 'Catégorie créée avec succès.');
@@ -58,6 +66,12 @@ class CategoryController extends Controller
 
     $category->update($validated);
 
+        ActionLog::create([
+            'user_id' => Auth::id(),
+            'action' => "Catégorie #{$category->id} modifié par " . Auth::user()->name,
+            'date_heure' => now(),
+        ]);
+
     return redirect()->route('categories.index')
       ->with('success', 'Catégorie mise à jour avec succès.');
   }
@@ -68,6 +82,12 @@ class CategoryController extends Controller
       return redirect()->route('categories.index')
         ->with('error', 'Impossible de supprimer une catégorie contenant des produits.');
     }
+
+    ActionLog::create([
+        'user_id' => Auth::id(),
+        'action' => "Catégorie #{$category->id} supprimée par " . Auth::user()->name,
+        'date_heure' => now(),
+    ]);
 
     $category->delete();
 

@@ -1,4 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Product, Category } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import { Label } from '@/components/ui/label';
@@ -32,9 +33,9 @@ export default function Edit({ product, categories }: Props) {
     name: product.name,
     category_id: product.category_id.toString(),
     description: product.description || '',
-    price: product.price.toString(),
-    purchase_price: product.purchase_price.toString(),
-    sale_price: product.sale_price.toString(),
+    price: product.price?.toString() || '0',
+    purchase_price: product.purchase_price?.toString() || '0',
+    sale_price: product.sale_price?.toString() || '0',
     stock_quantity: product.stock_quantity.toString(),
     minimum_stock: product.minimum_stock.toString(),
     barcode: product.barcode || '',
@@ -53,10 +54,11 @@ export default function Edit({ product, categories }: Props) {
 
       <div className="py-12">
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
-            <div className="p-6">
-              <h2 className="mb-6 text-2xl font-semibold text-cave-bordeaux">Modifier le produit</h2>
-
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl font-semibold text-cave-bordeaux">Modifier le produit</CardTitle>
+            </CardHeader>
+            <CardContent>
               <form onSubmit={submit} className="space-y-6">
                 <div>
                   <Label htmlFor="name" className="text-gray-700 dark:text-gray-200">Nom</Label>
@@ -222,8 +224,8 @@ export default function Edit({ product, categories }: Props) {
                   </Button>
                 </div>
               </form>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AppLayout>

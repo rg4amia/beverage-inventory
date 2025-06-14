@@ -33,20 +33,20 @@ export interface Category {
 
 export interface Transaction {
   id: number;
+  product_id: number;
+  user_id: number;
   type: 'in' | 'out';
   quantity: number;
   unit_price: number;
   total_price: number;
+  purchase_price: number;
+  sale_price: number;
+  profit: number;
   notes: string | null;
-  product_id: number;
-  product: Product;
-  user_id: number;
-  user: {
-    id: number;
-    name: string;
-  };
   created_at: string;
   updated_at: string;
+  product: Product;
+  user: User;
 }
 
 export interface NavItem {

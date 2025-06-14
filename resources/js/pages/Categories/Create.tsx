@@ -1,4 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -30,10 +31,11 @@ export default function Create() {
 
       <div className="py-12">
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
-            <div className="p-6">
-              <h2 className="mb-6 text-2xl font-semibold text-cave-bordeaux">Nouvelle catégorie</h2>
-
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl font-semibold text-cave-bordeaux">Nouvelle catégorie</CardTitle>
+            </CardHeader>
+            <CardContent>
               <form onSubmit={submit} className="space-y-6">
                 <div>
                   <Label htmlFor="name" className="text-gray-700 dark:text-gray-200">Nom</Label>
@@ -72,8 +74,8 @@ export default function Create() {
                   </Button>
                 </div>
               </form>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AppLayout>
