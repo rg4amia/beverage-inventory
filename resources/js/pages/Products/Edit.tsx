@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import InputError from '@/components/input-error';
+import { useState } from 'react';
 
 interface Props {
   product: Product;
@@ -29,6 +30,8 @@ interface FormData {
 }
 
 export default function Edit({ product, categories }: Props) {
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const { data, setData, post, processing, errors } = useForm<FormData>({
     name: product.name,
     category_id: product.category_id.toString(),
@@ -42,6 +45,18 @@ export default function Edit({ product, categories }: Props) {
     image: null as File | null,
     _method: 'PUT',
   });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setData('image', file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +82,7 @@ export default function Edit({ product, categories }: Props) {
                     type="text"
                     name="name"
                     value={data.name}
-                    className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                    className="block mt-1 w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('name', e.target.value)}
                     required
                   />
@@ -80,10 +95,10 @@ export default function Edit({ product, categories }: Props) {
                     value={data.category_id}
                     onValueChange={(value) => setData('category_id', value)}
                   >
-                    <SelectTrigger className="w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+                    <SelectTrigger className="w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600">
                       <SelectValue placeholder="Sélectionner une catégorie" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+                    <SelectContent className="bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-600">
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id.toString()} className="text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
                           {category.name}
@@ -100,7 +115,7 @@ export default function Edit({ product, categories }: Props) {
                     id="description"
                     name="description"
                     value={data.description}
-                    className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-cave-bordeaux focus:ring-cave-bordeaux"
+                    className="block mt-1 w-full text-gray-900 bg-white rounded-md border-gray-300 shadow-sm dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600 focus:border-cave-bordeaux focus:ring-cave-bordeaux"
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
                     rows={3}
                   />
@@ -116,7 +131,7 @@ export default function Edit({ product, categories }: Props) {
                       step="0.01"
                       name="price"
                       value={data.price}
-                      className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                      className="block mt-1 w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('price', e.target.value)}
                       required
                     />
@@ -130,7 +145,7 @@ export default function Edit({ product, categories }: Props) {
                       type="number"
                       name="purchase_price"
                       value={data.purchase_price}
-                      className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                      className="block mt-1 w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('purchase_price', e.target.value)}
                       required
                     />
@@ -144,7 +159,7 @@ export default function Edit({ product, categories }: Props) {
                       type="number"
                       name="sale_price"
                       value={data.sale_price}
-                      className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                      className="block mt-1 w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('sale_price', e.target.value)}
                       required
                     />
@@ -158,7 +173,7 @@ export default function Edit({ product, categories }: Props) {
                       type="number"
                       name="stock_quantity"
                       value={data.stock_quantity}
-                      className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                      className="block mt-1 w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('stock_quantity', e.target.value)}
                       required
                     />
@@ -172,7 +187,7 @@ export default function Edit({ product, categories }: Props) {
                       type="number"
                       name="minimum_stock"
                       value={data.minimum_stock}
-                      className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                      className="block mt-1 w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('minimum_stock', e.target.value)}
                       required
                     />
@@ -187,7 +202,7 @@ export default function Edit({ product, categories }: Props) {
                     type="text"
                     name="barcode"
                     value={data.barcode}
-                    className="block mt-1 w-full text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                    className="block mt-1 w-full text-gray-900 bg-white border-gray-300 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('barcode', e.target.value)}
                   />
                   <InputError message={errors.barcode} className="mt-2" />
@@ -195,22 +210,54 @@ export default function Edit({ product, categories }: Props) {
 
                 <div>
                   <Label htmlFor="image" className="text-gray-700 dark:text-gray-200">Image</Label>
-                  {product.image_path && (
-                    <div className="mt-2 mb-4">
-                      <img
-                        src={`/storage/${product.image_path}`}
-                        alt={product.name}
-                        className="object-cover w-32 h-32 rounded-lg"
-                      />
+                  <div className="flex gap-4 items-center mt-2">
+                    {(imagePreview || product.image_path) && (
+                      <div className="relative w-32 h-32">
+                        <img
+                          src={imagePreview || `/storage/${product.image_path}`}
+                          alt={product.name}
+                          className="object-cover w-full h-full rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setImagePreview(null);
+                            setData('image', null);
+                          }}
+                          className="absolute -top-2 -right-2 p-1 text-white bg-red-500 rounded-full hover:bg-red-600"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <div className="flex justify-center items-center w-full">
+                        <label
+                          htmlFor="image"
+                          className="flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500"
+                        >
+                          <div className="flex flex-col justify-center items-center pt-5 pb-6">
+                            <svg className="mb-4 w-8 h-8 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                            </svg>
+                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                              <span className="font-semibold">Cliquez pour télécharger</span> ou glissez-déposez
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG ou JPEG (MAX. 2MB)</p>
+                          </div>
+                          <input
+                            id="image"
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                          />
+                        </label>
+                      </div>
                     </div>
-                  )}
-                  <input
-                    type="file"
-                    id="image"
-                    name="image"
-                    className="block mt-1 w-full text-gray-900 dark:text-gray-200"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('image', e.target.files?.[0] || null)}
-                  />
+                  </div>
                   <InputError message={errors.image} className="mt-2" />
                 </div>
 

@@ -12,13 +12,22 @@ class AuthController extends Controller
 {
   public function login(Request $request)
   {
+
     $request->validate([
       'email' => 'required|email',
       'password' => 'required',
-      'device_name' => 'required',
+      //'device_name' => 'required',
     ]);
 
+    //dd($request->all());
+
     $user = User::where('email', $request->email)->first();
+
+    logger()->info('Login attempt', [
+      'email' => $request->email,
+      'password' => $request->password,
+     // 'device_name' => $request->device_name,
+    ]);
 
     if (!$user || !Hash::check($request->password, $user->password)) {
       throw ValidationException::withMessages([
@@ -27,7 +36,7 @@ class AuthController extends Controller
     }
 
     return response()->json([
-      'token' => $user->createToken($request->device_name)->plainTextToken,
+      'token' => $user->createToken($request->password)->plainTextToken,
       'user' => $user
     ]);
   }

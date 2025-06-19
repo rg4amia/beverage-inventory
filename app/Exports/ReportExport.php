@@ -28,9 +28,9 @@ class ReportExport
   $sheet->setCellValue('A1', 'Date');
   $sheet->setCellValue('B1', 'Ventes (Qté)');
   $sheet->setCellValue('C1', 'Achats (Qté)');
-  $sheet->setCellValue('D1', 'Ventes (€)');
-  $sheet->setCellValue('E1', 'Achats (€)');
-  $sheet->setCellValue('F1', 'Profit (€)');
+  $sheet->setCellValue('D1', 'Ventes (F CFA)');
+  $sheet->setCellValue('E1', 'Achats (F CFA)');
+  $sheet->setCellValue('F1', 'Profit (F CFA)');
 
   // Data
   $row = 2;

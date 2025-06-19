@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -23,44 +27,47 @@ class ProductController extends Controller
     return response()->json($product->load('category'));
   }
 
-  public function store(Request $request)
+  public function store(CreateProductRequest $request)
   {
-    $validator = Validator::make($request->all(), [
-      'name' => 'required|string|max:255',
-      'category_id' => 'required|exists:categories,id',
-      'description' => 'nullable|string',
-      'price' => 'required|numeric|min:0',
-      'stock_quantity' => 'required|integer|min:0',
-      'minimum_stock' => 'required|integer|min:0',
-      'barcode' => 'nullable|string|unique:products',
+
+    try {
+
+      DB::beginTransaction();
+      $validated = $request->validated();
+
+      logger()->info($validated);
+
+     $validated['slug'] = Str::slug($validated['name']);
+
+     if ($request->hasFile('image')) {
+         $path = $request->file('image')->store('products', 'public');
+         $validated['image_path'] = $path;
+     }
+
+    $product = Product::create($validated);
+
+    ActionLog::create([
+        'user_id' => Auth::id(),
+        'action' => "Produit #{$product->id} créée par " . Auth::user()->name,
+        'date_heure' => now(),
     ]);
 
-    if ($validator->fails()) {
-      return response()->json(['errors' => $validator->errors()], 422);
-    }
+         DB::commit();
 
-    $product = Product::create($request->all());
+    } catch (\Exception $e) {
+
+      logger()->info($e->getMessage());
+            DB::rollBack();
+        }
 
     return response()->json($product, 201);
   }
 
-  public function update(Request $request, Product $product)
+  public function update(UpdateProductRequest $request, Product $product)
   {
-    $validator = Validator::make($request->all(), [
-      'name' => 'required|string|max:255',
-      'category_id' => 'required|exists:categories,id',
-      'description' => 'nullable|string',
-      'price' => 'required|numeric|min:0',
-      'stock_quantity' => 'required|integer|min:0',
-      'minimum_stock' => 'required|integer|min:0',
-      'barcode' => 'nullable|string|unique:products,barcode,' . $product->id,
-    ]);
+    $validated = $request->validated();
 
-    if ($validator->fails()) {
-      return response()->json(['errors' => $validator->errors()], 422);
-    }
-
-    $product->update($request->all());
+    $product->update($validated);
 
     return response()->json($product);
   }

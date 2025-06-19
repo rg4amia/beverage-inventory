@@ -107,7 +107,7 @@ export default function Reports({ auth }: PageProps) {
 
         // Données pour le graphique des transactions par jour
         const dailyData = {
-            labels: Object.keys(data.stats.daily_stats).map(date => 
+            labels: Object.keys(data.stats.daily_stats).map(date =>
                 format(new Date(date), 'dd/MM', { locale: fr })
             ),
             datasets: [
@@ -259,7 +259,7 @@ export default function Reports({ auth }: PageProps) {
                                         </div>
                                         <div className="p-4 bg-gray-50 rounded-lg">
                                             <h3 className="text-sm font-medium text-gray-500">Valeur totale</h3>
-                                            <p className="mt-2 text-3xl font-semibold">{previewData.stats.total_value.toFixed(2)} €</p>
+                                            <p className="mt-2 text-3xl font-semibold">{previewData.stats.total_value.toFixed(2)} F CFA</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -287,7 +287,7 @@ export default function Reports({ auth }: PageProps) {
                                                         <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{type}</td>
                                                         <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.count}</td>
                                                         <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.quantity}</td>
-                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.value.toFixed(2)} €</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.value.toFixed(2)} F CFA</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -318,7 +318,7 @@ export default function Reports({ auth }: PageProps) {
                                                         <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.name}</td>
                                                         <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.count}</td>
                                                         <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.quantity}</td>
-                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.value.toFixed(2)} €</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{stats.value.toFixed(2)} F CFA</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -429,7 +429,7 @@ export default function Reports({ auth }: PageProps) {
                                                         <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{transaction.type}</td>
                                                         <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{transaction.user.name}</td>
                                                         <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
-                                                            {(transaction.quantity * transaction.product.price).toFixed(2)} €
+                                                            {(transaction.quantity * transaction.product.price).toFixed(2)} F CFA
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -444,4 +444,4 @@ export default function Reports({ auth }: PageProps) {
             </div>
         </AppLayout>
     );
-} 
+}

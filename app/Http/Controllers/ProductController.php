@@ -15,14 +15,49 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')
-            ->latest()
-            ->paginate(6);
+        $query = Product::with('category');
+
+        logger()->info($request->all());
+
+        // Recherche par nom
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        // Recherche par catégorie
+        if ($request->has('category') && !empty($request->get('category'))) {
+            $category = $request->get('category');
+            if (is_array($category)) {
+                $query->whereIn('category_id', $category);
+            } else {
+                $query->where('category_id', $category);
+            }
+        }
+
+        // Recherche par prix minimum
+        if ($request->has('min_price')) {
+            //$query->where('price', '>=', $request->get('min_price'));
+        }
+
+        // Recherche par prix maximum
+        if ($request->has('max_price')) {
+            //$query->where('price', '<=', $request->get('max_price'));
+        }
+
+        // Recherche par stock minimum
+        if ($request->has('min_stock')) {
+            // $query->where('stock_quantity', '>=', $request->get('min_stock'));
+        }
+
+        $products = $query->latest()->paginate(6);
 
         return Inertia::render('Products/Index', [
-            'products' => $products
+            'products' => $products,
+            'filters' => $request->only(['search', 'category', 'min_price', 'max_price', 'min_stock']),
+            'categories' => Category::all()
         ]);
     }
 
@@ -49,7 +84,7 @@ class ProductController extends Controller
                 $validated['image_path'] = $path;
             }
 
-           $product = Product::create($validated);
+            $product = Product::create($validated);
 
             ActionLog::create([
                 'user_id' => Auth::id(),
@@ -63,7 +98,7 @@ class ProductController extends Controller
                 ->with('success', 'Produit créé avec succès.');
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e->getMessage());
+
             return back()->withErrors([
                 'error' => 'Une erreur est survenue lors de la création du produit.'
             ])->withInput();
