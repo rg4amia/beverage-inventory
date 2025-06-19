@@ -15,6 +15,7 @@ export interface Product {
   minimum_stock: number;
   barcode: string;
   image_path: string | null;
+  image_url: string | null;
   category_id: number;
   category: Category;
   created_at: string;

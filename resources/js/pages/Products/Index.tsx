@@ -154,7 +154,7 @@ export default function Index({ products, filters }: Props) {
                       <div className="flex gap-4">
                         <div className="w-1/3">
                           <img
-                            src={product.image_path || 'https://via.placeholder.com/150?text=No+Image'}
+                            src={product.image_url || 'https://via.placeholder.com/150?text=No+Image'}
                             alt={product.name}
                             className="object-contain w-full h-32 bg-gray-100 rounded-md dark:bg-gray-700"
                           />

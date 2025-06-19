@@ -51,8 +51,8 @@ class Product extends Model
     }
 
     // Accessor pour l'URL de l'image
-    public function getImageUrlAttribute()
+    /* public function getImageUrlAttribute()
     {
         return $this->image_path ? Storage::url($this->image_path) : null;
-    }
+    } */
 }

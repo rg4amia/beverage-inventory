@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Models\ActionLog;
 
 class ProductController extends Controller
 {
@@ -29,28 +31,26 @@ class ProductController extends Controller
 
   public function store(CreateProductRequest $request)
   {
-
     try {
+        DB::beginTransaction();
+        $validated = $request->validated();
 
-      DB::beginTransaction();
-      $validated = $request->validated();
+        logger()->info($validated);
 
-      logger()->info($validated);
+        $validated['slug'] = Str::slug($validated['name']);
 
-     $validated['slug'] = Str::slug($validated['name']);
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $validated['image_path'] = $path;
+        }
 
-     if ($request->hasFile('image')) {
-         $path = $request->file('image')->store('products', 'public');
-         $validated['image_path'] = $path;
-     }
+        $product = Product::create($validated);
 
-    $product = Product::create($validated);
-
-    ActionLog::create([
-        'user_id' => Auth::id(),
-        'action' => "Produit #{$product->id} créée par " . Auth::user()->name,
-        'date_heure' => now(),
-    ]);
+        ActionLog::create([
+            'user_id' => Auth::id(),
+            'action' => "Produit #{$product->id} créée par " . Auth::user()->name,
+            'date_heure' => now(),
+        ]);
 
          DB::commit();
 

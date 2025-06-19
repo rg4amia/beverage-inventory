@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +52,12 @@ class ProductController extends Controller
         }
 
         $products = $query->latest()->paginate(6);
+
+        // Ajoute l'URL de l'image à chaque produit
+        $products->getCollection()->transform(function ($product) {
+            $product->image_url = $product->image_path ? Storage::url($product->image_path) : null;
+            return $product;
+        });
 
         return Inertia::render('Products/Index', [
             'products' => $products,
