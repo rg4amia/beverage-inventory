@@ -19,8 +19,6 @@ class ProductController extends Controller
     {
         $query = Product::with('category');
 
-        logger()->info($request->all());
-
         // Recherche par nom
         if ($request->has('search')) {
             $search = $request->get('search');
