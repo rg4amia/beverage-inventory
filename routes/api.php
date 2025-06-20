@@ -25,8 +25,8 @@ Route::middleware('auth:sanctum')->prefix('v1')->name('api.')->group(function ()
     });
 
     // Routes pour les produits
-    Route::get('/products/low-stock', [ProductController::class, 'lowStock']);
-    Route::apiResource('products', ProductController::class);
+    Route::get('/products/low-stock', [App\Http\Controllers\Api\ProductController::class, 'lowStock']);
+    Route::apiResource('products', App\Http\Controllers\Api\ProductController::class);
 
     Route::apiResource('dashboard', DashboardController::class);
     Route::apiResource('categories', CategoryController::class);
